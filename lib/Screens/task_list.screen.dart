@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:task_tracking/Models/TaskstatusColor.model.dart';
 import 'package:task_tracking/Screens/create_task.screen.dart';
 import 'package:task_tracking/Services/task_controller.service.dart';
 import 'package:task_tracking/Utils/constants/colors.dart';
 
-class TaskList extends StatelessWidget {
+class TaskList extends StatefulWidget {
   TaskList({Key? key}) : super(key: key);
+
+  @override
+  State<TaskList> createState() => _TaskListState();
+}
+
+class _TaskListState extends State<TaskList> {
   final TaskController taskController = Get.put(TaskController());
 
   @override
@@ -78,16 +85,20 @@ class TaskList extends StatelessWidget {
                                       height: 40.spMin,
                                       width: 80.spMin,
                                       decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.green),
+                                          border: Border.all(
+                                              color: TaskStatusColor()
+                                                  .getColorFromLabel(
+                                                      task.taskStatus)),
                                           borderRadius:
                                               BorderRadius.circular(10),
                                           color: TColors.bodyBackground),
                                       child: Center(
                                           child: Text(
-                                        'In Pending',
+                                        task.taskStatus,
                                         style: TextStyle(
-                                            color: Colors.green,
+                                            color: TaskStatusColor()
+                                                .getColorFromLabel(
+                                                    task.taskStatus),
                                             fontSize: 14.spMin,
                                             fontWeight: FontWeight.w600),
                                       )),
@@ -115,8 +126,9 @@ class TaskList extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
           backgroundColor: TColors.black,
-          onPressed: () {
-            Get.to(CreateTask());
+          onPressed: () async {
+            await Get.to(() => CreateTask());
+            setState(() {});
           },
           child: Center(
               child: Icon(

@@ -19,8 +19,10 @@ class TaskController extends GetxController {
 
   void saveTasks() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> taskList =
-        tasks.map((task) => "${task.title}###${task.description}").toList();
+    List<String> taskList = tasks
+        .map((task) =>
+            "${task.title}###${task.description}###${task.taskStatus}")
+        .toList();
     await prefs.setStringList('tasks', taskList);
   }
 
@@ -31,7 +33,10 @@ class TaskController extends GetxController {
       tasks.assignAll(
         taskList.map((taskString) {
           List<String> taskData = taskString.split("###");
-          return Task(title: taskData[0], description: taskData[1]);
+          return Task(
+              title: taskData[0],
+              description: taskData[1],
+              taskStatus: taskData[2]);
         }).toList(),
       );
     }

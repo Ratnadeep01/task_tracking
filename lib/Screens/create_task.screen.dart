@@ -8,21 +8,32 @@ import '../Models/Task.model.dart';
 import '../Models/TaskstatusColor.model.dart';
 import '../Utils/constants/colors.dart';
 
-class CreateTask extends StatelessWidget {
+class CreateTask extends StatefulWidget {
   CreateTask({Key? key}) : super(key: key);
 
+  @override
+  State<CreateTask> createState() => _CreateTaskState();
+}
+
+class _CreateTaskState extends State<CreateTask> {
   final ChipSelectionController _chipSelectionController =
       Get.put(ChipSelectionController());
+
   RxBool noChipSelected = true.obs;
+
   RxBool showChipError = false.obs;
+
   final TextEditingController _titleController = TextEditingController();
+
   final TextEditingController _descriptionController = TextEditingController();
+
   final TaskController taskController = Get.put(TaskController());
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Widget buildChoiceChip(String label, int index) {
-    int chipIndex = _chipSelectionController.selectedIndex.value;
-    bool chipSelected = chipIndex == index;
+  Widget buildChoiceChip(String label) {
+    String chipLabel = _chipSelectionController.selectedLabel.value;
+    bool chipSelected = chipLabel == label;
     return ChoiceChip(
       backgroundColor: TColors.black,
       selectedColor: TColors.black,
@@ -30,19 +41,19 @@ class CreateTask extends StatelessWidget {
           side: BorderSide(
               width: 2,
               color: chipSelected
-                  ? TaskStatusColor().getColorFromIndex(chipIndex)
+                  ? TaskStatusColor().getColorFromLabel(chipLabel)
                   : Colors.grey)),
       label: Text(label),
       selected: chipSelected,
       onSelected: (bool selected) {
         noChipSelected.value = false;
         showChipError.value = false;
-        _chipSelectionController.setSelectedIndex(index);
+        _chipSelectionController.setSelectedLabel(label);
       },
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       labelStyle: TextStyle(
         color: chipSelected
-            ? TaskStatusColor().getColorFromIndex(chipIndex)
+            ? TaskStatusColor().getColorFromLabel(chipLabel)
             : Colors.grey,
         fontWeight: FontWeight.bold,
       ),
@@ -160,9 +171,9 @@ class CreateTask extends StatelessWidget {
                       runSpacing: 10,
                       spacing: 20,
                       children: [
-                        Obx(() => buildChoiceChip('Pending', 0)),
-                        Obx(() => buildChoiceChip('InProgress', 1)),
-                        Obx(() => buildChoiceChip('Completed', 2)),
+                        Obx(() => buildChoiceChip('Pending')),
+                        Obx(() => buildChoiceChip('InProgress')),
+                        Obx(() => buildChoiceChip('Completed')),
                       ],
                     ),
                   ),
@@ -195,13 +206,12 @@ class CreateTask extends StatelessWidget {
                         SharedPreferences.getInstance();
                         Task task = Task(
                             title: _titleController.text,
-                            description: _descriptionController.text);
+                            description: _descriptionController.text,
+                            taskStatus:
+                                _chipSelectionController.selectedLabel.value);
                         taskController.addTask(task);
-                        ChipSelectionController().setSelectedIndex(3);
-                        print(ChipSelectionController().selectedIndex.value);
-                        noChipSelected.value = false;
-                        showChipError.value = false;
-                        Get.back();
+                        setState(() {});
+                        Navigator.pop(context);
                       }
                       if (noChipSelected.isTrue) {
                         showChipError.value = true;
@@ -226,9 +236,9 @@ class CreateTask extends StatelessWidget {
 }
 
 class ChipSelectionController extends GetxController {
-  RxInt selectedIndex = 3.obs;
+  RxString selectedLabel = "".obs;
 
-  void setSelectedIndex(int index) {
-    selectedIndex.value = index;
+  void setSelectedLabel(String label) {
+    selectedLabel.value = label;
   }
 }

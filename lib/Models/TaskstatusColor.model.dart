@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TaskStatusColor {
-  Map<int, Color> textToColorMap = {
-    0: Colors.yellow,
-    1: Colors.blue,
-    2: Colors.green
+  Map<String, Color> textToColorMap = {
+    "Pending": Colors.yellow,
+    "InProgress": Colors.blue,
+    "Completed": Colors.green
   };
 
-  Color getColorFromIndex(int index) {
-    return textToColorMap[index]!;
+  Color getColorFromLabel(String label) {
+    return textToColorMap[label]!;
   }
 }
